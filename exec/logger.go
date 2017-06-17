@@ -2,7 +2,6 @@ package exec
 
 import (
 	"io"
-	"time"
 
 	"github.com/go-kit/kit/log"
 )
@@ -23,7 +22,7 @@ func NewLoggerSvc(w io.Writer) LoggerSvc {
 
 	l := log.NewLogfmtLogger(w)
 
-	l = log.With(l, "time", time.Now().String())
+	l = log.With(l, "time", log.DefaultTimestampUTC)
 
 	l = log.With(l, "severity", "info")
 
@@ -38,7 +37,8 @@ func (l *loggerSvc) Listen() {
 
 	go func() {
 		for {
-			l.Logger.Log("info", <-l.Queue)
+			r := <-l.Queue
+			l.Logger.Log("check_command", r.CheckCommand, "description", r.Description, "status", r.Status, "result", r.Result, "expect", r.Expect)
 		}
 	}()
 

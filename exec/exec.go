@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -28,8 +29,11 @@ type Check struct {
 
 // Result is a struct for storing plugin exection results.
 type Result struct {
-	Status      bool   `json:"status"`
-	Description string `json:"description"`
+	CheckCommand string      `json:"check_command"`
+	Expect       bool        `json:"expect"`
+	Status       bool        `json:"status"`
+	Result       interface{} `json:"result"`
+	Description  string      `json:"description"`
 }
 
 // Checks is a slice of Check.
@@ -86,35 +90,43 @@ func (c *Controller) Run(cfg *Config, l LoggerSvc, e ErrorSvc) {
 
 						err := check.Validate()
 						if err != nil {
-							e.Send(err)
+							e.Send(check.Command, err)
 							continue
 						}
 
-						r := Result{}
+						r := Result{
+							CheckCommand: check.Command,
+						}
 
-						cmd := exec.Command(fmt.Sprintf("%v%v", cfg.Plugins.Path, check.Command))
+						args := strings.Split(check.Command, " ")
+
+						command := args[0]
+
+						args = append(args[:0], args[0+1:]...)
+
+						cmd := exec.Command(fmt.Sprintf("%v%v", cfg.Plugins.Path, command), args...)
 
 						reader, err := cmd.StdoutPipe()
 						if err != nil {
-							e.Send(err)
+							e.Send(check.Command, err)
 							continue
 						}
 
 						err = cmd.Start()
 						if err != nil {
-							e.Send(err)
+							e.Send(check.Command, err)
 							continue
 						}
 
 						err = json.NewDecoder(reader).Decode(&r)
 						if err != nil {
-							e.Send(err)
+							e.Send(check.Command, err)
 							continue
 						}
 
 						err = cmd.Wait()
 						if err != nil {
-							e.Send(err)
+							e.Send(check.Command, err)
 							continue
 						}
 

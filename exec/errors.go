@@ -2,19 +2,24 @@ package exec
 
 import (
 	"io"
-	"time"
 
 	"github.com/go-kit/kit/log"
 )
 
 type errSvc struct {
-	Queue  chan error
+	Queue  chan ErrorResult
 	Logger log.Logger
+}
+
+// ErrorResult is the struct used to store error information.
+type ErrorResult struct {
+	CheckCommand string `json:"check_command"`
+	Error        error  `json:"error"`
 }
 
 // ErrorSvc is the interface to use for handling errors.
 type ErrorSvc interface {
-	Send(err error)
+	Send(checkCommand string, err error)
 	Listen()
 }
 
@@ -23,26 +28,31 @@ func NewErrorSvc(w io.Writer) ErrorSvc {
 
 	l := log.NewLogfmtLogger(w)
 
-	l = log.With(l, "time", time.Now().String())
+	l = log.With(l, "time", log.DefaultTimestampUTC)
 
 	l = log.With(l, "severity", "error")
 
 	return ErrorSvc(&errSvc{
-		Queue:  make(chan error),
+		Queue:  make(chan ErrorResult),
 		Logger: l,
 	})
 }
 
 // Send adds errors the the error queue channel.
-func (e *errSvc) Send(err error) {
-	e.Queue <- err
+func (e *errSvc) Send(checkCommand string, err error) {
+	r := ErrorResult{
+		CheckCommand: checkCommand,
+		Error:        err,
+	}
+	e.Queue <- r
 }
 
 // Listen waits and displays any errors sent to the error queue channel.
 func (e *errSvc) Listen() {
 	go func() {
 		for {
-			e.Logger.Log("error", <-e.Queue)
+			r := <-e.Queue
+			e.Logger.Log("check_command", r.CheckCommand, "error", r.Error.Error())
 		}
 	}()
 }
