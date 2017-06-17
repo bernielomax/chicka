@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/bernielomax/chicka/exec"
-	"github.com/fsnotify/fsnotify"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"os"
 	"runtime"
+
+	"github.com/bernielomax/chicka/exec"
+	"github.com/fsnotify/fsnotify"
+	"github.com/go-kit/kit/log"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func init() {
@@ -16,6 +18,7 @@ func init() {
 
 }
 
+// RootCmd is the base command config for the cli.
 var RootCmd = &cobra.Command{
 	Use:   "chicka",
 	Short: "Chicka is pluggable monitoring system written in Go",
@@ -32,7 +35,7 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		panic(fmt.Errorf("fatal error config file: %s", err))
 	}
 
 	errs := make(chan error)
@@ -45,6 +48,7 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 	c := exec.NewController()
 
 	viper.WatchConfig()
+
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		err := cfg.Refresh()
 		if err != nil {
@@ -53,20 +57,14 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 		c.Cancel()
 	})
 
-	l := exec.NewLoggerSvc()
+	l := exec.NewLoggerSvc(log.NewSyncWriter(os.Stdout))
 
 	l.Listen()
 
-	e := exec.NewErrorSvc()
+	e := exec.NewErrorSvc(log.NewSyncWriter(os.Stderr))
 
 	e.Listen()
 
 	c.Run(cfg, l, e)
 
-	exitOnError(<-errs)
-}
-
-func exitOnError(err error) {
-	fmt.Println("Error:", err)
-	os.Exit(1)
 }
