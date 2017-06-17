@@ -1,26 +1,14 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
+	"github.com/bernielomax/chicka/exec"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 	"runtime"
-	"time"
 )
-
-type Check struct {
-	Command  string   `json:"check"`
-	Args     []string `json:"args"`
-	Interval int      `json:"interval"`
-}
-
-type Checks []Check
-
-type Config struct {
-	Checks Checks `json:"checks"`
-}
 
 func init() {
 
@@ -47,45 +35,38 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 
-	done := make(chan error)
+	errs := make(chan error)
+
+	cfg, err := exec.ReadConfig()
+	if err != nil {
+		errs <- err
+	}
+
+	c := exec.NewController()
 
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-
-		cfg := Config{}
-
-		err := viper.Unmarshal(&cfg)
+		err := cfg.Refresh()
 		if err != nil {
-			done <- err
+			errs <- err
 		}
-
-		for _, check := range cfg.Checks {
-
-			err := check.Validate()
-			if err != nil {
-				done <- err
-			}
-
-			go func(check Check) {
-
-				for true {
-					fmt.Println(check.Command)
-					time.Sleep(time.Duration(check.Interval) * time.Second)
-				}
-
-			}(check)
-
-		}
+		c.Cancel()
 	})
 
-	panic(<-done)
+	l := exec.NewLoggerSvc()
+
+	l.Listen()
+
+	e := exec.NewErrorSvc()
+
+	e.Listen()
+
+	c.Run(cfg, l, e)
+
+	exitOnError(<-errs)
 }
 
-func (c *Check) Validate() error {
-
-	if c.Interval < 5 {
-		return errors.New("the interval must be greater than 5")
-	}
-
-	return nil
+func exitOnError(err error) {
+	fmt.Println("Error:", err)
+	os.Exit(1)
 }
