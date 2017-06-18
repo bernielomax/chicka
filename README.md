@@ -1,6 +1,24 @@
 # chicka
 A pluggable Go monitoring system
 
+### Building
+
+To build Chicka you need a working Go environment.
+
+##### OSx:
+
+``` 
+make osx
+```
+
+##### Linux:
+
+``` 
+make linux
+```
+
+Make will place a working `chicka` executable inside the Chicka source folder.
+
 ### Configuration
 
 The configuration for Chicka can belong in the following locations:
