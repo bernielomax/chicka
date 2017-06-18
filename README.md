@@ -44,8 +44,8 @@ logging:
 cache:
   ttl: 120 # amount of time to store tests in cache
 http:
-  api_addr: :9090 # the listen address for the API HTTP server
-  frontend_addr: :8080 # the listen address for the HTTP web console
+  api: :9090 # the listen address for the API HTTP server
+  www: :8080 # the listen address for the HTTP web console
 tests: # a list of tests (plugins) to run and their intervals
 - command: docker-images.py --threshold 10
   interval: 5
