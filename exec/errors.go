@@ -13,13 +13,13 @@ type errSvc struct {
 
 // ErrorResult is the struct used to store error information.
 type ErrorResult struct {
-	CheckCommand string `json:"check_command"`
-	Error        error  `json:"error"`
+	TestCommand string `json:"test_command"`
+	Error       error  `json:"error"`
 }
 
 // ErrorSvc is the interface to use for handling errors.
 type ErrorSvc interface {
-	Send(checkCommand string, err error)
+	Send(testCommand string, err error)
 	Listen()
 }
 
@@ -37,10 +37,10 @@ func NewErrorSvc(w io.Writer) ErrorSvc {
 }
 
 // Send adds errors the the error queue channel.
-func (e *errSvc) Send(checkCommand string, err error) {
+func (e *errSvc) Send(testCommand string, err error) {
 	r := ErrorResult{
-		CheckCommand: checkCommand,
-		Error:        err,
+		TestCommand: testCommand,
+		Error:       err,
 	}
 	e.Queue <- r
 }
@@ -50,7 +50,7 @@ func (e *errSvc) Listen() {
 	go func() {
 		for {
 			r := <-e.Queue
-			e.Logger.Log("check_command", r.CheckCommand, "error", r.Error.Error())
+			e.Logger.Log("test_command", r.TestCommand, "error", r.Error.Error())
 		}
 	}()
 }

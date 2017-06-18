@@ -11,7 +11,7 @@ type Config struct {
 	Plugins PluginsConfig `json:"plugins"`
 	Logging LoggingConfig `json:"logging"`
 	Cache   CacheConfig   `json:"cache"`
-	Checks  Checks        `json:"checks"`
+	Tests   Tests         `json:"tests"`
 }
 
 // PluginsConfig is the data structure for configuring plugins.

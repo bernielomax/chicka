@@ -26,26 +26,26 @@ type Controller struct {
 	Cancel context.CancelFunc
 }
 
-// Check is a struct for defining check settings.
-type Check struct {
-	Command  string   `json:"check"`
+// Test is a struct for defining test settings.
+type Test struct {
+	Command  string   `json:"command"`
 	Args     []string `json:"args"`
 	Interval int      `json:"interval"`
 }
 
 // Result is a struct for storing plugin exection results.
 type Result struct {
-	CheckCommand string      `json:"check_command"`
-	Expect       bool        `json:"expect"`
-	Result       bool        `json:"result"`
-	Data         interface{} `json:"data"`
-	Description  string      `json:"description"`
+	TestCommand string      `json:"test_command"`
+	Expect      bool        `json:"expect"`
+	Result      bool        `json:"result"`
+	Data        interface{} `json:"data"`
+	Description string      `json:"description"`
 }
 
-// Checks is a slice of Check.
-type Checks []Check
+// Tests is a slice of Test.
+type Tests []Test
 
-// NewController sets up the controller for managing checks.
+// NewController sets up the controller for managing tests.
 func NewController() *Controller {
 
 	ctx := context.Background()
@@ -64,51 +64,51 @@ func (ctrl *Controller) Reset() {
 	ctrl.Ctx, ctrl.Cancel = context.WithCancel(ctx)
 }
 
-// Validate is used to validate the check.
-func (ctrl *Check) Validate() error {
+// Validate is used to validate the test.
+func (t *Test) Validate() error {
 
-	if ctrl.Interval < 5 {
+	if t.Interval < 5 {
 		return errValidationIntervalLength
 	}
 
 	return nil
 }
 
-// Run is used to execute all checks defined in the configuration.
+// Run is used to execute all tests defined in the configuration.
 func (ctrl *Controller) Run(cfg *Config, c *cache.Cache, l LoggerSvc, e ErrorSvc) {
 
 	for {
 
-		total := len(cfg.Checks)
+		total := len(cfg.Tests)
 
 		done := make(chan bool, total)
 
-		for _, check := range cfg.Checks {
+		for _, test := range cfg.Tests {
 
-			go func(check Check) {
+			go func(test Test) {
 
 				run := true
 
 				for run {
 
-					if check.Interval < validSleepIntervalLength {
-						check.Interval = 60
+					if test.Interval < validSleepIntervalLength {
+						test.Interval = 60
 					}
 
 					select {
-					case <-time.After(time.Duration(check.Interval) * time.Second):
+					case <-time.After(time.Duration(test.Interval) * time.Second):
 
-						err := check.Validate()
+						err := test.Validate()
 						if err != nil {
-							e.Send(check.Command, err)
+							e.Send(test.Command, err)
 							continue
 						}
 
 						r := Result{
-							CheckCommand: check.Command,
+							TestCommand: test.Command,
 						}
 
-						args := strings.Split(check.Command, " ")
+						args := strings.Split(test.Command, " ")
 
 						command := args[0]
 
@@ -118,13 +118,13 @@ func (ctrl *Controller) Run(cfg *Config, c *cache.Cache, l LoggerSvc, e ErrorSvc
 
 						reader, err := cmd.StdoutPipe()
 						if err != nil {
-							e.Send(check.Command, err)
+							e.Send(test.Command, err)
 							continue
 						}
 
 						err = cmd.Start()
 						if err != nil {
-							e.Send(check.Command, err)
+							e.Send(test.Command, err)
 							continue
 						}
 
@@ -136,19 +136,19 @@ func (ctrl *Controller) Run(cfg *Config, c *cache.Cache, l LoggerSvc, e ErrorSvc
 						output := buf.String()
 
 						if err != nil {
-							e.Send(check.Command, fmt.Errorf("error: %v, output: %v", err, output))
+							e.Send(test.Command, fmt.Errorf("error: %v, output: %v", err, output))
 							continue
 						}
 
 						err = json.Unmarshal([]byte(output), &r)
 						if err != nil {
-							e.Send(check.Command, fmt.Errorf("error: %v, output: %v", err, output))
+							e.Send(test.Command, fmt.Errorf("error: %v, output: %v", err, output))
 							continue
 						}
 
 						l.Send(r)
 
-						c.Set(check.Command, r, cache.DefaultExpiration)
+						c.Set(test.Command, r, cache.DefaultExpiration)
 
 					case <-ctrl.Ctx.Done():
 						run = false
@@ -156,7 +156,7 @@ func (ctrl *Controller) Run(cfg *Config, c *cache.Cache, l LoggerSvc, e ErrorSvc
 					}
 				}
 
-			}(check)
+			}(test)
 		}
 
 		for i := 0; i < total; i++ {
