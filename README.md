@@ -72,3 +72,21 @@ As long as your plugin outputs conforms to the following JSON standard your plug
     "expect":      true                                                    // what result were you expecting?
 }
 ```
+
+### API
+
+
+You can access the API using the following URL (depending on your `http.api` config):
+
+``` 
+http://localhost:9090
+```
+
+### Web Console
+
+
+You can access the web console using the following URL (depending on your `http.www` config):
+
+``` 
+http://localhost:8080
+```

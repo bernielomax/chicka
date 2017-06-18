@@ -5,6 +5,7 @@ import (
 	"github.com/bernielomax/chicka/exec"
 	"github.com/patrickmn/go-cache"
 	"net/http"
+	"fmt"
 )
 
 // StartAPIServer starts and binds a HTTP API service.
@@ -27,7 +28,7 @@ func StartFrontEndServer(addr string) {
 
 // FrontendHandler is the handler for the HTTP frontend service.
 func FrontendHandler(w http.ResponseWriter, r *http.Request) {
-
+	fmt.Fprint(w, indexHTML)
 }
 
 // APIHandler is the handler for the HTTP API service.
@@ -35,6 +36,7 @@ func APIHandler(c *cache.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		results := make(exec.Results)
 
