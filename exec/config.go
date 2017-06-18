@@ -1,23 +1,32 @@
 package exec
 
 import (
+	"time"
+
 	"github.com/spf13/viper"
 )
 
 // Config is the data structure for chick base configurations.
 type Config struct {
-	Plugins Plugins `json:"plugins"`
-	Logging Logging `json:"logging"`
-	Checks  Checks  `json:"checks"`
+	Plugins PluginsConfig `json:"plugins"`
+	Logging LoggingConfig `json:"logging"`
+	Cache   CacheConfig   `json:"cache"`
+	Checks  Checks        `json:"checks"`
 }
 
-// Plugins is the data structure for configuring pluigns.
-type Plugins struct {
+// PluginsConfig is the data structure for configuring plugins.
+type PluginsConfig struct {
 	Path string `json:"path"`
 }
 
-type Logging struct {
+// LoggingConfig is the data structure for configuring logging.
+type LoggingConfig struct {
 	Path string `json:"path"`
+}
+
+// CacheConfig is the data structure for configuring the go-cache.
+type CacheConfig struct {
+	TTL time.Duration `json:"ttl"`
 }
 
 // ReadConfig reads the chicka config file into a data structure.

@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"time"
 
 	"github.com/bernielomax/chicka/exec"
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-kit/kit/log"
+	"github.com/patrickmn/go-cache"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -57,6 +59,8 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 		c.Cancel()
 	})
 
+	cache := cache.New(cfg.Cache.TTL*time.Second, cfg.Cache.TTL*time.Second)
+
 	file, err := os.OpenFile(cfg.Logging.Path, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		errs <- err
@@ -72,6 +76,6 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 
 	e.Listen()
 
-	c.Run(cfg, l, e)
+	c.Run(cfg, cache, l, e)
 
 }

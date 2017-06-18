@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	cache "github.com/patrickmn/go-cache"
 )
 
 const (
@@ -57,15 +59,15 @@ func NewController() *Controller {
 }
 
 // Reset sets a new context with cancel support into the controller.
-func (c *Controller) Reset() {
+func (ctrl *Controller) Reset() {
 	ctx := context.Background()
-	c.Ctx, c.Cancel = context.WithCancel(ctx)
+	ctrl.Ctx, ctrl.Cancel = context.WithCancel(ctx)
 }
 
 // Validate is used to validate the check.
-func (c *Check) Validate() error {
+func (ctrl *Check) Validate() error {
 
-	if c.Interval < 5 {
+	if ctrl.Interval < 5 {
 		return errValidationIntervalLength
 	}
 
@@ -73,7 +75,7 @@ func (c *Check) Validate() error {
 }
 
 // Run is used to execute all checks defined in the configuration.
-func (c *Controller) Run(cfg *Config, l LoggerSvc, e ErrorSvc) {
+func (ctrl *Controller) Run(cfg *Config, c *cache.Cache, l LoggerSvc, e ErrorSvc) {
 
 	for {
 
@@ -146,7 +148,9 @@ func (c *Controller) Run(cfg *Config, l LoggerSvc, e ErrorSvc) {
 
 						l.Send(r)
 
-					case <-c.Ctx.Done():
+						c.Set(check.Command, r, cache.DefaultExpiration)
+
+					case <-ctrl.Ctx.Done():
 						run = false
 						done <- true
 					}
@@ -159,6 +163,6 @@ func (c *Controller) Run(cfg *Config, l LoggerSvc, e ErrorSvc) {
 			<-done
 		}
 
-		c.Reset()
+		ctrl.Reset()
 	}
 }
