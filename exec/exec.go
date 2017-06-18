@@ -37,8 +37,8 @@ type Check struct {
 type Result struct {
 	CheckCommand string      `json:"check_command"`
 	Expect       bool        `json:"expect"`
-	Status       bool        `json:"status"`
-	Result       interface{} `json:"result"`
+	Result       bool        `json:"result"`
+	Data         interface{} `json:"data"`
 	Description  string      `json:"description"`
 }
 

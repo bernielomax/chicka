@@ -34,7 +34,7 @@ func (l *loggerSvc) Listen() {
 		for {
 			r := <-l.Queue
 			for _, logger := range l.Loggers {
-				logger.Log("check_command", r.CheckCommand, "description", r.Description, "status", r.Status, "result", r.Result, "expect", r.Expect)
+				logger.Log("check_command", r.CheckCommand, "description", r.Description, "data", r.Data, "result", r.Result, "expect", r.Expect)
 			}
 		}
 	}()
