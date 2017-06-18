@@ -3,10 +3,12 @@ package cmd
 import (
 	"fmt"
 	"os"
+	osExec "os/exec"
 	"runtime"
 	"time"
 
 	"github.com/bernielomax/chicka/exec"
+	"github.com/bernielomax/chicka/http"
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-kit/kit/log"
 	"github.com/patrickmn/go-cache"
@@ -47,6 +49,19 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 		errs <- err
 	}
 
+	b, err := exec.PathExists(cfg.Plugins.Path)
+	if err != nil {
+		panic(err)
+	}
+
+	if !b {
+		cmd := osExec.Command("git", "clone", cfg.Git.URL, cfg.Plugins.Path)
+		err := cmd.Run()
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	c := exec.NewController()
 
 	viper.WatchConfig()
@@ -75,6 +90,12 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 	e := exec.NewErrorSvc(log.NewSyncWriter(os.Stderr))
 
 	e.Listen()
+
+	fmt.Println("HTTP", cfg.HTTP)
+
+	go http.StartAPIServer(cfg.HTTP.APIAddr, cache)
+
+	go http.StartFrontEndServer(cfg.HTTP.FrontendAddr)
 
 	c.Run(cfg, cache, l, e)
 

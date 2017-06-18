@@ -11,12 +11,19 @@ type Config struct {
 	Plugins PluginsConfig `json:"plugins"`
 	Logging LoggingConfig `json:"logging"`
 	Cache   CacheConfig   `json:"cache"`
+	Git     GitConfig     `json:"git"`
+	HTTP    HTTPConfig    `json:"http"`
 	Tests   Tests         `json:"tests"`
 }
 
 // PluginsConfig is the data structure for configuring plugins.
 type PluginsConfig struct {
 	Path string `json:"path"`
+}
+
+// GitConfig is the data structure for configuring the plugins git repo.
+type GitConfig struct {
+	URL string `json:"url"`
 }
 
 // LoggingConfig is the data structure for configuring logging.
@@ -27,6 +34,12 @@ type LoggingConfig struct {
 // CacheConfig is the data structure for configuring the go-cache.
 type CacheConfig struct {
 	TTL time.Duration `json:"ttl"`
+}
+
+// HTTPConfig is the data struct for configuring HTTP services.
+type HTTPConfig struct {
+	APIAddr      string `json:"api_addr"`
+	FrontendAddr string `json:"frontend_addr"`
 }
 
 // ReadConfig reads the chicka config file into a data structure.

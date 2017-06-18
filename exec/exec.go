@@ -9,7 +9,9 @@ import (
 	"strings"
 	"time"
 
-	cache "github.com/patrickmn/go-cache"
+	"github.com/patrickmn/go-cache"
+	"os"
+	"strconv"
 )
 
 const (
@@ -33,6 +35,9 @@ type Test struct {
 	Interval int      `json:"interval"`
 }
 
+// Tests is a slice of test.
+type Tests []Test
+
 // Result is a struct for storing plugin exection results.
 type Result struct {
 	TestCommand string      `json:"test_command"`
@@ -42,8 +47,8 @@ type Result struct {
 	Description string      `json:"description"`
 }
 
-// Tests is a slice of Test.
-type Tests []Test
+// Results is a slice of result.
+type Results map[string]Result
 
 // NewController sets up the controller for managing tests.
 func NewController() *Controller {
@@ -56,6 +61,17 @@ func NewController() *Controller {
 		Ctx:    ctx,
 		Cancel: cancel,
 	}
+}
+
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
 }
 
 // Reset sets a new context with cancel support into the controller.
@@ -148,7 +164,7 @@ func (ctrl *Controller) Run(cfg *Config, c *cache.Cache, l LoggerSvc, e ErrorSvc
 
 						l.Send(r)
 
-						c.Set(test.Command, r, cache.DefaultExpiration)
+						c.Set(strconv.Itoa(int(time.Now().UnixNano())), r, cache.DefaultExpiration)
 
 					case <-ctrl.Ctx.Done():
 						run = false
