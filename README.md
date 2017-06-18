@@ -73,7 +73,7 @@ As long as your plugin outputs conforms to the following JSON standard your plug
 {
     "description": "the total number of docker images must not exceed 5",  // describes the test
     "result":      false,                                                  // did the test pass?
-    "data":        28                                                     // the data that the result logic was based on.
+    "data":        28                                                      // the data that the result was based on.
 }
 ```
 
