@@ -23,7 +23,8 @@ type PluginsConfig struct {
 
 // GitConfig is the data structure for configuring the plugins git repo.
 type GitConfig struct {
-	URL string `json:"url"`
+	URL  string `json:"url"`
+	Pull bool   `json:"pull"`
 }
 
 // LoggingConfig is the data structure for configuring logging.
@@ -38,8 +39,8 @@ type CacheConfig struct {
 
 // HTTPConfig is the data struct for configuring HTTP services.
 type HTTPConfig struct {
-	APIAddr      string `json:"api_addr"`
-	FrontendAddr string `json:"frontend_addr"`
+	API string `json:"api"`
+	WWW string `json:"www"`
 }
 
 // ReadConfig reads the chicka config file into a data structure.

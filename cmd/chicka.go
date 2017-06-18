@@ -30,35 +30,48 @@ var RootCmd = &cobra.Command{
 	Run: runRootCmd,
 }
 
+func exitOnError(err error) {
+	fmt.Println("ERROR:", err)
+	os.Exit(1)
+}
+
 func runRootCmd(cmd *cobra.Command, args []string) {
 	viper.SetConfigName("config")
-	viper.AddConfigPath("/etc/ckicka/")
+	viper.AddConfigPath("/etc/chicka/")
 	viper.AddConfigPath("$HOME/.chicka")
 	viper.AddConfigPath(".")
 	viper.SetConfigType("yaml")
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("fatal error config file: %s", err))
+		exitOnError(fmt.Errorf("fatal error config file: %s", err))
 	}
 
 	errs := make(chan error)
 
 	cfg, err := exec.ReadConfig()
 	if err != nil {
-		errs <- err
+		exitOnError(err)
 	}
 
 	b, err := exec.PathExists(cfg.Plugins.Path)
 	if err != nil {
-		panic(err)
+		exitOnError(err)
 	}
 
 	if !b {
-		cmd := osExec.Command("git", "clone", cfg.Git.URL, cfg.Plugins.Path)
-		err := cmd.Run()
+		command := osExec.Command("git", "clone", cfg.Git.URL, cfg.Plugins.Path)
+		err := command.Run()
 		if err != nil {
-			panic(err)
+			exitOnError(err)
+		}
+	}
+
+	if cfg.Git.Pull {
+		command := osExec.Command("cd", cfg.Plugins.Path, "&&", "git", "pull")
+		err := command.Run()
+		if err != nil {
+			exitOnError(err)
 		}
 	}
 
@@ -91,11 +104,9 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 
 	e.Listen()
 
-	fmt.Println("HTTP", cfg.HTTP)
+	go http.StartAPIServer(cfg.HTTP.API, cache)
 
-	go http.StartAPIServer(cfg.HTTP.APIAddr, cache)
-
-	go http.StartFrontEndServer(cfg.HTTP.FrontendAddr)
+	go http.StartFrontEndServer(cfg.HTTP.WWW)
 
 	c.Run(cfg, cache, l, e)
 

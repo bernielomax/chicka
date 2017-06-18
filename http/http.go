@@ -2,32 +2,35 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/bernielomax/chicka/exec"
 	"github.com/patrickmn/go-cache"
 	"net/http"
 )
 
+// StartAPIServer starts and binds a HTTP API service.
 func StartAPIServer(addr string, c *cache.Cache) {
-	fmt.Println("ADDR", addr)
+
 	server := http.NewServeMux()
 	server.HandleFunc("/", APIHandler(c))
 	http.ListenAndServe(addr, server)
 
 }
 
+// StartFrontEndServer starts and binds a frontend WWW service.
 func StartFrontEndServer(addr string) {
-	fmt.Println("ADDR", addr)
+
 	server := http.NewServeMux()
 	server.HandleFunc("/", FrontendHandler)
 	http.ListenAndServe(addr, server)
 
 }
 
+// FrontendHandler is the handler for the HTTP frontend service.
 func FrontendHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// APIHandler is the handler for the HTTP API service.
 func APIHandler(c *cache.Cache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

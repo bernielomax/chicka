@@ -63,6 +63,7 @@ func NewController() *Controller {
 	}
 }
 
+// PathExists is used to check if a local path exists.
 func PathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
