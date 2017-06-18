@@ -1,0 +1,28 @@
+git:
+  url: git@github.com:bernielomax/chicka-plugins.git
+  pull: true
+plugins:
+  path: /chicka-plugins/
+logging:
+  path: /tmp/chicka.log
+cache:
+  ttl: 120
+http:
+  api: ":9090"
+  www: ":8080"
+tests:
+- command: docker-images.py --threshold 40 
+  interval: 5
+  expect: true
+- command: load-average.rb --threshold 2 --inverse true
+  interval: 30
+  expect: true
+- command: stringmatch.sh /tmp/test.txt dog 3
+  interval: 60 
+  expect: true
+- command: process-running.js --name foobar --inverse false
+  interval: 30 
+  expect: true
+- command: process-running.js --name ssh-agent --inverse true
+  interval: 30
+  expect: true

@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	osExec "os/exec"
 	"runtime"
 	"time"
 
@@ -17,6 +16,14 @@ import (
 )
 
 func init() {
+
+	viper.SetConfigName("config")
+	viper.AddConfigPath("/etc/chicka/")
+	viper.AddConfigPath("$HOME/.chicka")
+	viper.AddConfigPath(".")
+	viper.SetConfigType("yaml")
+
+	RootCmd.AddCommand(getCmd)
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -36,11 +43,6 @@ func exitOnError(err error) {
 }
 
 func runRootCmd(cmd *cobra.Command, args []string) {
-	viper.SetConfigName("config")
-	viper.AddConfigPath("/etc/chicka/")
-	viper.AddConfigPath("$HOME/.chicka")
-	viper.AddConfigPath(".")
-	viper.SetConfigType("yaml")
 
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -52,27 +54,6 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 	cfg, err := exec.ReadConfig()
 	if err != nil {
 		exitOnError(err)
-	}
-
-	b, err := exec.PathExists(cfg.Plugins.Path)
-	if err != nil {
-		exitOnError(err)
-	}
-
-	if !b {
-		command := osExec.Command("git", "clone", cfg.Git.URL, cfg.Plugins.Path)
-		err := command.Run()
-		if err != nil {
-			exitOnError(err)
-		}
-	}
-
-	if cfg.Git.Pull {
-		command := osExec.Command("cd", cfg.Plugins.Path, "&&", "git", "pull")
-		err := command.Run()
-		if err != nil {
-			exitOnError(err)
-		}
 	}
 
 	c := exec.NewController()

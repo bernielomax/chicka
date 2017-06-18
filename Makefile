@@ -5,3 +5,7 @@ osx:
 
 linux:
 	env GOOS=linux GOARCH=amd64 go build -o chicka main.go
+
+docker:
+	env GOOS=linux GOARCH=amd64 go build -o chicka main.go
+	docker build -t chicka .

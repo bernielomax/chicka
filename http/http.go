@@ -2,10 +2,10 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/bernielomax/chicka/exec"
 	"github.com/patrickmn/go-cache"
 	"net/http"
-	"fmt"
 )
 
 // StartAPIServer starts and binds a HTTP API service.

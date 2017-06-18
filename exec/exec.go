@@ -124,7 +124,7 @@ func (ctrl *Controller) Run(cfg *Config, c *cache.Cache, l LoggerSvc, e ErrorSvc
 
 						r := Result{
 							Command: test.Command,
-							Expect: test.Expect,
+							Expect:  test.Expect,
 						}
 
 						args := strings.Split(test.Command, " ")
