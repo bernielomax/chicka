@@ -1,4 +1,4 @@
-# chicka
+# Chicka
 A pluggable Go monitoring system
 
 ### Building
