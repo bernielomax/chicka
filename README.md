@@ -23,9 +23,9 @@ Make will place a working `chicka` executable inside the Chicka source folder.
 
 The configuration for Chicka can belong in the following locations:
 
-* $HOME/.chicka/config.yaml
-* /etc/chicka/config.yaml
-* ./config.yaml
+* `$HOME/.chicka/config.yaml`
+* `/etc/chicka/config.yaml`
+* `./config.yaml`
 
 The following is an example of the config.yaml
 
