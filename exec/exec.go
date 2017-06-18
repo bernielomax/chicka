@@ -33,14 +33,15 @@ type Test struct {
 	Command  string   `json:"command"`
 	Args     []string `json:"args"`
 	Interval int      `json:"interval"`
+	Expect   bool     `json:"expect"`
 }
 
 // Tests is a slice of test.
 type Tests []Test
 
-// Result is a struct for storing plugin exection results.
+// Result is a struct for storing plugin execution results.
 type Result struct {
-	TestCommand string      `json:"test_command"`
+	Command     string      `json:"command"`
 	Expect      bool        `json:"expect"`
 	Result      bool        `json:"result"`
 	Data        interface{} `json:"data"`
@@ -122,7 +123,8 @@ func (ctrl *Controller) Run(cfg *Config, c *cache.Cache, l LoggerSvc, e ErrorSvc
 						}
 
 						r := Result{
-							TestCommand: test.Command,
+							Command: test.Command,
+							Expect: test.Expect,
 						}
 
 						args := strings.Split(test.Command, " ")
