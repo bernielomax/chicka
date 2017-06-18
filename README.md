@@ -5,13 +5,13 @@ A pluggable Go monitoring system
 
 To build Chicka you need a working Go environment.
 
-##### OSx:
+#### OSx:
 
 ``` 
 make osx
 ```
 
-##### Linux:
+#### Linux:
 
 ``` 
 make linux
@@ -21,7 +21,7 @@ Make will place a working `chicka` executable inside the Chicka source folder.
 
 ### Configuration
 
-##### Paths:
+#### Paths:
 
 The configuration for Chicka can belong in the following locations:
 
@@ -29,7 +29,7 @@ The configuration for Chicka can belong in the following locations:
 * `/etc/chicka/config.yaml`
 * `./config.yaml`
 
-##### Example:
+#### Example:
 
 The following is an example of the config.yaml
 
