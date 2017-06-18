@@ -30,8 +30,6 @@ func NewErrorSvc(w io.Writer) ErrorSvc {
 
 	l = log.With(l, "time", log.DefaultTimestampUTC)
 
-	l = log.With(l, "severity", "error")
-
 	return ErrorSvc(&errSvc{
 		Queue:  make(chan ErrorResult),
 		Logger: l,

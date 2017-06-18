@@ -7,11 +7,16 @@ import (
 // Config is the data structure for chick base configurations.
 type Config struct {
 	Plugins Plugins `json:"plugins"`
+	Logging Logging `json:"logging"`
 	Checks  Checks  `json:"checks"`
 }
 
 // Plugins is the data structure for configuring pluigns.
 type Plugins struct {
+	Path string `json:"path"`
+}
+
+type Logging struct {
 	Path string `json:"path"`
 }
 

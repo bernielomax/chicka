@@ -1,14 +1,10 @@
 package exec
 
-import (
-	"io"
-
-	"github.com/go-kit/kit/log"
-)
+import "github.com/go-kit/kit/log"
 
 type loggerSvc struct {
-	Queue  chan Result
-	Logger log.Logger
+	Queue   chan Result
+	Loggers []log.Logger
 }
 
 // LoggerSvc is the interface for managing logging functions.
@@ -18,17 +14,16 @@ type LoggerSvc interface {
 }
 
 // NewLoggerSvc returns a LoggerSvc interface.
-func NewLoggerSvc(w io.Writer) LoggerSvc {
+func NewLoggerSvc(loggers ...log.Logger) LoggerSvc {
 
-	l := log.NewLogfmtLogger(w)
-
-	l = log.With(l, "time", log.DefaultTimestampUTC)
-
-	l = log.With(l, "severity", "info")
+	for k, l := range loggers {
+		l = log.With(l, "time", log.DefaultTimestampUTC)
+		loggers[k] = l
+	}
 
 	return LoggerSvc(&loggerSvc{
-		Queue:  make(chan Result),
-		Logger: l,
+		Queue:   make(chan Result),
+		Loggers: loggers,
 	})
 }
 
@@ -38,7 +33,9 @@ func (l *loggerSvc) Listen() {
 	go func() {
 		for {
 			r := <-l.Queue
-			l.Logger.Log("check_command", r.CheckCommand, "description", r.Description, "status", r.Status, "result", r.Result, "expect", r.Expect)
+			for _, logger := range l.Loggers {
+				logger.Log("check_command", r.CheckCommand, "description", r.Description, "status", r.Status, "result", r.Result, "expect", r.Expect)
+			}
 		}
 	}()
 

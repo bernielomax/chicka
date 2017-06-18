@@ -57,7 +57,14 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 		c.Cancel()
 	})
 
-	l := exec.NewLoggerSvc(log.NewSyncWriter(os.Stdout))
+	file, err := os.OpenFile(cfg.Logging.Path, os.O_RDWR|os.O_CREATE, 0644)
+	if err != nil {
+		errs <- err
+	}
+
+	defer file.Close()
+
+	l := exec.NewLoggerSvc(log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout)), log.NewJSONLogger(log.NewSyncWriter(file)))
 
 	l.Listen()
 

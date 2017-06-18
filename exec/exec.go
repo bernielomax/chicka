@@ -1,17 +1,21 @@
 package exec
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os/exec"
 	"strings"
 	"time"
 )
 
+const (
+	validSleepIntervalLength = 5
+)
+
 var (
-	errValidationIntervalLength = errors.New("the interval must be greater than 5")
+	errValidationIntervalLength = fmt.Errorf("the interval must be greater than %d", validSleepIntervalLength)
 )
 
 // Controller is a struct for managing executions.
@@ -85,6 +89,10 @@ func (c *Controller) Run(cfg *Config, l LoggerSvc, e ErrorSvc) {
 
 				for run {
 
+					if check.Interval < validSleepIntervalLength {
+						check.Interval = 60
+					}
+
 					select {
 					case <-time.After(time.Duration(check.Interval) * time.Second):
 
@@ -118,15 +126,21 @@ func (c *Controller) Run(cfg *Config, l LoggerSvc, e ErrorSvc) {
 							continue
 						}
 
-						err = json.NewDecoder(reader).Decode(&r)
+						buf := new(bytes.Buffer)
+						buf.ReadFrom(reader)
+
+						err = cmd.Wait()
+
+						output := buf.String()
+
 						if err != nil {
-							e.Send(check.Command, err)
+							e.Send(check.Command, fmt.Errorf("error: %v, output: %v", err, output))
 							continue
 						}
 
-						err = cmd.Wait()
+						err = json.Unmarshal([]byte(output), &r)
 						if err != nil {
-							e.Send(check.Command, err)
+							e.Send(check.Command, fmt.Errorf("error: %v, output: %v", err, output))
 							continue
 						}
 
