@@ -28,7 +28,7 @@ This will place a working `chicka` executable inside the Chicka source folder.
 To run the docker container run the following:
 
 ``` 
-docker run --name chicka -d -p "8080:8080" -p "9090:9090" -v test.txt:/tmp/test.txt -v /var/run/docker.sock:/var/run/docker.sock chicka
+docker run --name chicka -d -p "8080:8080" -p "9090:9090" -v $(pwd)/test.txt:/tmp/test.txt -v /var/run/docker.sock:/var/run/docker.sock chicka
 
 ```
 
