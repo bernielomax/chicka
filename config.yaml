@@ -19,9 +19,9 @@ tests:
 - command: stringmatch.sh /tmp/test.txt dog 3
   interval: 20
   expect: true
-- command: process-running.js --name foobar
+- command: process-running.js --name foobar --inverse true
   interval: 30 
   expect: true
-- command: process-running.js --name ssh-agent --inverse true
+- command: process-running.js --name chicka
   interval: 30
   expect: true
