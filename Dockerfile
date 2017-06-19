@@ -6,6 +6,7 @@ RUN apk update \
         nodejs-current \
         nodejs-current-npm \
         ruby \
+        ruby-json \
         python \
         py2-pip
 
