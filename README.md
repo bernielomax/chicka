@@ -62,16 +62,16 @@ tests: # a list of tests (plugins) to run and their intervals
 - command: docker-images.py --threshold 10
   interval: 5
   expect: true
-- command: load-average.rb --threshold 2 --expect true
+- command: load-average.rb --threshold 2
   interval: 30
   expect: true
 - command: stringmatch.sh /tmp/test.txt dog 3
   interval: 60 
   expect: true
-- command: process-running.js --name foobar --expect false
+- command: process-running.js --name foobar --inverse true
   interval: 30 
   expect: true
-- command: process-running.js --name ssh-agent --expect true
+- command: process-running.js --name ssh-agent
   interval: 30
   expect: true
 
