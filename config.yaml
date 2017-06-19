@@ -13,13 +13,13 @@ tests:
 - command: docker-images.py --threshold 40
   interval: 5
   expect: true
-- command: load-average.rb --threshold 2 --inverse true
+- command: load-average.rb --threshold 2
   interval: 10
   expect: true
 - command: stringmatch.sh /tmp/test.txt dog 3
   interval: 20
   expect: true
-- command: process-running.js --name foobar --inverse false
+- command: process-running.js --name foobar
   interval: 30 
   expect: true
 - command: process-running.js --name ssh-agent --inverse true
