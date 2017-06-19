@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"runtime"
 	"time"
@@ -34,26 +33,21 @@ var RootCmd = &cobra.Command{
 	Use:   "chicka",
 	Short: "Chicka is pluggable monitoring system written in Go",
 
-	Run: runRootCmd,
+	RunE: runRootCmd,
 }
 
-func exitOnError(err error) {
-	fmt.Println("ERROR:", err)
-	os.Exit(1)
-}
-
-func runRootCmd(cmd *cobra.Command, args []string) {
+func runRootCmd(cmd *cobra.Command, args []string) error {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		exitOnError(fmt.Errorf("fatal error config file: %s", err))
+		return err
 	}
 
 	errs := make(chan error)
 
 	cfg, err := exec.ReadConfig()
 	if err != nil {
-		exitOnError(err)
+		return err
 	}
 
 	c := exec.NewController()
@@ -90,5 +84,7 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 	go http.StartFrontEndServer(cfg.HTTP.WWW)
 
 	c.Run(cfg, cache, l, e)
+
+	return nil
 
 }

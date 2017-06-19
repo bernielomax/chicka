@@ -6,9 +6,13 @@ import (
 	"os"
 )
 
+func exitOnError(err error) {
+	fmt.Println("ERROR:", err)
+	os.Exit(1)
+}
+
 func main() {
 	if err := cmd.RootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		exitOnError(err)
 	}
 }

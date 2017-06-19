@@ -6,7 +6,7 @@ var indexHTML = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>React Test</title>
+    <title>Chicka Results</title>
     <style type="text/css">
         body {
             font-family: sans-serif;

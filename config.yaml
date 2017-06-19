@@ -1,6 +1,5 @@
 git:
-  url: git@github.com:bernielomax/chicka-plugins.git
-  pull: true
+  url: https://github.com/bernielomax/chicka-plugins.git
 plugins:
   path: /chicka-plugins/
 logging:
@@ -11,9 +10,6 @@ http:
   api: ":9090"
   www: ":8080"
 tests:
-- command: docker-images.py --threshold 40 
-  interval: 5
-  expect: true
 - command: load-average.rb --threshold 2 --inverse true
   interval: 30
   expect: true

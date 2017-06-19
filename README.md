@@ -36,7 +36,6 @@ The following is an example of the config.yaml
 ```
 git:
   url: git@github.com:bernielomax/chicka-plugins.git # git plugin repo URL
-  pull: true # pulls latest on startup
 plugins:
   path: /Users/justin.pye/Documents/chicka-plugins/ # local path where plugins will reside
 logging:
@@ -62,6 +61,30 @@ tests: # a list of tests (plugins) to run and their intervals
 - command: process-running.js --name ssh-agent --expect true
   interval: 30
   expect: true
+
+```
+
+### Get plugins via git
+
+```
+ 
+chicka get
+
+```
+
+Git SSH authentication.
+
+```
+
+chicka get --help
+       get latest chicka plugins repo
+       
+       Usage:
+         chicka get [flags]
+       
+       Flags:
+         -h, --help             help for get
+         -k, --ssh-key string   The SSH key to use for Git authentication (default "/Users/justin.pye/.ssh/id_rsa")
 
 ```
 

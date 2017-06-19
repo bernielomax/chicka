@@ -24,7 +24,6 @@ type PluginsConfig struct {
 // GitConfig is the data structure for configuring the plugins git repo.
 type GitConfig struct {
 	URL  string `json:"url"`
-	Pull bool   `json:"pull"`
 }
 
 // LoggingConfig is the data structure for configuring logging.

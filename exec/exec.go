@@ -133,7 +133,15 @@ func (ctrl *Controller) Run(cfg *Config, c *cache.Cache, l LoggerSvc, e ErrorSvc
 
 						args = append(args[:0], args[0+1:]...)
 
-						cmd := exec.Command(fmt.Sprintf("%v%v", cfg.Plugins.Path, command), args...)
+						path := cfg.Plugins.Path
+
+						last := path[len(path)-1:]
+
+						if last != "/" {
+							path = fmt.Sprintf("%v/", path)
+						}
+
+						cmd := exec.Command(fmt.Sprintf("%v%v", path, command), args...)
 
 						reader, err := cmd.StdoutPipe()
 						if err != nil {

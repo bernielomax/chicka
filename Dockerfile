@@ -21,4 +21,6 @@ RUN mkdir /etc/chicka
 COPY config.yaml /etc/chicka/config.yaml
 COPY chicka /usr/local/bin/chicka
 
+RUN chicka get
+
 ENTRYPOINT /usr/local/bin/chicka
