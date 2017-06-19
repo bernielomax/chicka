@@ -72,7 +72,7 @@ chicka get
 
 ```
 
-Git SSH authentication.
+#### Git SSH authentication
 
 ```
 
