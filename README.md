@@ -101,6 +101,10 @@ chicka get --help
 
 ```
 
+### Plugins
+
+[Chicka plugins can be found here](https://github.com/bernielomax/chicka-plugins)
+
 ### Writing custom plugins
 
 As long as your plugin outputs conforms to the following JSON standard your plugin will work:
