@@ -58,7 +58,7 @@ cache:
 http:
   api: :9090 # the listen address for the API HTTP server
   www: :8080 # the listen address for the HTTP web console
-tests: # a list of tests (plugins) to run and their intervals
+tests: # a list of tests (plugins) to run along with their interval and expected result.
 - command: docker-images.py --threshold 10
   interval: 5
   expect: true
