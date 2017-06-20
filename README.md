@@ -1,17 +1,18 @@
 # Chicka
+
 A pluggable Go monitoring system
 
 ### Building
 
 To build Chicka you need a working Go environment.
 
-#### OSx:
+#### OSx
 
 ``` 
 make osx
 ```
 
-#### Linux:
+#### Linux
 
 ``` 
 make linux
@@ -53,7 +54,7 @@ plugins:
 logging:
   path: /tmp/chicka.log # local path where the logs will reside
 cache:
-  ttl: 120 # amount of time to store tests in cache
+  ttl: 120 # amount of time in seconds to store tests in cache
 http:
   api: :9090 # the listen address for the API HTTP server
   www: :8080 # the listen address for the HTTP web console
@@ -78,7 +79,7 @@ tests: # a list of tests (plugins) to run along with their interval and expected
 
 ### Get plugins via git
 
-Chicka has a builtin Git integration. The `git.url` configuraiton must be specified in the `config.yaml`. Plugins can then be downloaded to the `plugins.path` location by running the following command:
+Chicka has a builtin Git integration. The `git.url` configuraiton must be specified in the `config.yaml`. Plugins will then be downloaded to the `plugins.path` location by running the following command:
 
 ```
 chicka get
