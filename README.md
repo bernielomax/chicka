@@ -29,7 +29,6 @@ To run the docker container run the following:
 
 ``` 
 docker run --name chicka -d -p "8080:8080" -p "9090:9090" -v $(pwd)/test.txt:/tmp/test.txt -v /var/run/docker.sock:/var/run/docker.sock chicka
-
 ```
 
 ### Configuration
@@ -82,15 +81,12 @@ tests: # a list of tests (plugins) to run along with their interval and expected
 Chicka has a builtin Git integration. The `git.url` configuraiton must be specified in the `config.yaml`. Plugins can then be downloaded to the `plugins.path` location by running the following command:
 
 ```
- 
 chicka get
-
 ```
 
 #### Git SSH authentication
 
 ```
-
 chicka get --help
        get latest chicka plugins repo
        
@@ -100,7 +96,6 @@ chicka get --help
        Flags:
          -h, --help             help for get
          -k, --ssh-key string   The SSH key to use for Git authentication (default "/Users/justin.pye/.ssh/id_rsa")
-
 ```
 
 ### Plugins
