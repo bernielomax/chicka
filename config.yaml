@@ -10,8 +10,8 @@ http:
   api: ":9090"
   www: ":8080"
 tests:
-- command: docker-images.py --threshold 40
-  interval: 5
+- command: docker-images.py --threshold 50
+  interval: 30
   expect: true
 - command: load-average.rb --threshold 2
   interval: 10
@@ -19,7 +19,7 @@ tests:
 - command: stringmatch.sh /tmp/test.txt dog 3
   interval: 20
   expect: true
-- command: process-running.js --name foobar --inverse true
+- command: process-running.js --name foobar --inverse
   interval: 30 
   expect: true
 - command: process-running.js --name chicka

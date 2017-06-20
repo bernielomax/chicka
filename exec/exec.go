@@ -1,7 +1,6 @@
 package exec
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -141,35 +140,16 @@ func (ctrl *Controller) Run(cfg *Config, c *cache.Cache, l LoggerSvc, e ErrorSvc
 							path = fmt.Sprintf("%v/", path)
 						}
 
-						cmd := exec.Command(fmt.Sprintf("%v%v", path, command), args...)
+						b, err := exec.Command(fmt.Sprintf("%v%v", path, command), args...).CombinedOutput()
 
-						reader, err := cmd.StdoutPipe()
 						if err != nil {
-							e.Send(test.Command, err)
+							e.Send(test.Command, fmt.Errorf("error: %v, output: %s", err, b))
 							continue
 						}
 
-						err = cmd.Start()
+						err = json.Unmarshal(b, &r)
 						if err != nil {
-							e.Send(test.Command, err)
-							continue
-						}
-
-						buf := new(bytes.Buffer)
-						buf.ReadFrom(reader)
-
-						err = cmd.Wait()
-
-						output := buf.String()
-
-						if err != nil {
-							e.Send(test.Command, fmt.Errorf("error: %v, output: %v", err, output))
-							continue
-						}
-
-						err = json.Unmarshal([]byte(output), &r)
-						if err != nil {
-							e.Send(test.Command, fmt.Errorf("error: %v, output: %v", err, output))
+							e.Send(test.Command, fmt.Errorf("error: %v, output: %s", err, b))
 							continue
 						}
 
