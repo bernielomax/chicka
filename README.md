@@ -79,6 +79,8 @@ tests: # a list of tests (plugins) to run and their intervals
 
 ### Get plugins via git
 
+Chicka has a builtin Git integration. The `git.url` configuraiton must be specified in the `config.yaml`. Plugins can then be downloaded to the `plugins.path` location by running the following command:
+
 ```
  
 chicka get
